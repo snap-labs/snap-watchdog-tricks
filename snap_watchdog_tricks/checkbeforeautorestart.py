@@ -5,8 +5,6 @@ import subprocess
 
 # Third party libraries
 from watchdog.utils import echo
-from watchdog_tricks import utils
-from watchdog.tricks import Trick
 from watchdog_tricks.batch import BatchTrick
 
 
@@ -23,34 +21,31 @@ class CheckBeforeAutoRestartTrick(BatchTrick):
 
     def __init__(self, command, check_command, patterns=None, ignore_patterns=None,
                  ignore_directories=False, stop_signal=signal.SIGINT,
-                 kill_after=10):
-        super(CheckBeforeAutoRestartTrick, self).__init__(
-            patterns, ignore_patterns, ignore_directories)
+                 kill_after=10, autostart=False):
         self.command = command
         self.check_command = check_command
         self.stop_signal = stop_signal
         self.kill_after = kill_after
         self.process = None
-        print('RIGHT THEN', vars(self))
-        self.start()
+        super(CheckBeforeAutoRestartTrick, self).__init__(
+            patterns, ignore_patterns, ignore_directories)
+        if autostart:
+            self.start()
 
     def check(self):
 
         print("Calling check command - {0}".format(self.check_command))
         check = subprocess.run(self.check_command, stdout=subprocess.PIPE)
-        print("Completed\n{0}".format(check.stdout))
-        print("Return code ", check)
+        print(check.stdout.decode("utf-8") )
         if check.returncode == 0:
             return 1
         else:
             return 0
 
     def start(self):
-        print('START')
         self.process = subprocess.Popen(self.command, preexec_fn=os.setsid)
 
     def stop(self):
-        print('STOP')
         if self.process is None:
             return
         try:
@@ -74,7 +69,6 @@ class CheckBeforeAutoRestartTrick(BatchTrick):
 
     @echo.echo
     def on_multiple_events(self, event):
-        print('GRRTTTTTT')
         if self.check():
             self.stop()
             self.start()
