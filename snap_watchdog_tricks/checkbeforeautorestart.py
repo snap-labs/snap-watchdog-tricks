@@ -32,8 +32,10 @@ class CheckBeforeAutoRestartTrick(BatchTrick):
 
     def check(self):
 
+        print("Calling check command - {0}".format(self.check_command)
         check = subprocess.run([self.check_command], capture_output=True)
-        print(check.stdout)
+        print("Completed\n{0}".format(check.stdout))
+        print("Return code ", check)
         if check.returncode == 0:
             return 1
         else:

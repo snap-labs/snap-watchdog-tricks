@@ -27,7 +27,7 @@ setuptools.setup(
             "Topic :: System :: Filesystems",
     ],
     install_requires=[
-        'watchdog==0.9.0',
+        'watchdog==0.10.2',
         'watchdog_tricks@git+https://github.com/snap-labs/watchdog-tricks.git'
     ],
     packages=['snap_watchdog_tricks'],
