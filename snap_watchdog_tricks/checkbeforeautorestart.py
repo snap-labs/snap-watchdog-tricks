@@ -21,9 +21,10 @@ class CheckBeforeAutoRestartTrick(BatchTrick):
 
     def __init__(self, command, check_command, patterns=None, ignore_patterns=None,
                  ignore_directories=False, stop_signal=signal.SIGINT,
-                 kill_after=10, autostart=False):
+                 kill_after=10, autostart=False, only_these_events=None):
         self.command = command
         self.check_command = check_command
+        self.only_these_events = only_these_events
         self.stop_signal = stop_signal
         self.kill_after = kill_after
         self.process = None
@@ -32,7 +33,7 @@ class CheckBeforeAutoRestartTrick(BatchTrick):
         if autostart:
             self.start()
 
-    def check(self):
+    def check(self, events):
 
         print("Calling check command - {0}".format(self.check_command))
         check = subprocess.run(self.check_command, stdout=subprocess.PIPE)
@@ -43,9 +44,11 @@ class CheckBeforeAutoRestartTrick(BatchTrick):
             return 0
 
     def start(self):
+        print("starting command - {0}".format(self.command))
         self.process = subprocess.Popen(self.command, preexec_fn=os.setsid)
 
     def stop(self):
+        print("stopping command - {0}".format(self.command))
         if self.process is None:
             return
         try:
@@ -68,8 +71,17 @@ class CheckBeforeAutoRestartTrick(BatchTrick):
         self.process = None
 
     @echo.echo
-    def on_multiple_events(self, event):
-        if self.check():
+    def on_multiple_events(self, events):
+        go = False
+        if self.only_these_events:
+            for event in events:
+                if event.event_type in self.only_these_events:
+                    go = True
+                    break
+        else:
+            go = True
+
+        if go and self.check(events):
             self.stop()
             self.start()
         else:
