@@ -28,7 +28,8 @@ setuptools.setup(
     ],
     install_requires=[
         'watchdog[watchmedo]==0.10.3',
-        'watchdog_tricks@git+https://github.com/snap-labs/watchdog-tricks.git'
+        # 'watchdog_tricks@git+https://github.com/snap-labs/watchdog-tricks.git'
+        'watchdog_tricks@git+https://github.com/snap-labs/watchdog-tricks/tarball/v0.1.3#egg=watchdog-tricks'
     ],
     packages=['snap_watchdog_tricks'],
 )
