@@ -1,4 +1,6 @@
 import os
+from pathlib import Path
+
 import time
 import signal
 import subprocess
@@ -21,9 +23,11 @@ class CheckBeforeAutoRestartTrick(BatchTrick):
 
     def __init__(self, command, check_command, patterns=None, ignore_patterns=None,
                  ignore_directories=False, stop_signal=signal.SIGINT,
-                 kill_after=10, autostart=False, only_these_events=None):
+                 kill_after=10, autostart=False, only_these_events=None,
+                 touchfile=None):
         self.command = command
         self.check_command = check_command
+        self.touchfile = touchfile
         self.only_these_events = only_these_events
         self.stop_signal = stop_signal
         self.kill_after = kill_after
@@ -43,9 +47,15 @@ class CheckBeforeAutoRestartTrick(BatchTrick):
         else:
             return 0
 
+    def touch_file(self):
+        print("Touching - {0}".format(self.touchfile))
+        Path(self.touchfile).touch(exist_ok=True)
+
     def start(self):
         print("starting command - {0}".format(self.command))
         self.process = subprocess.Popen(self.command, preexec_fn=os.setsid)
+        if self.touchfile:
+            self.touch_file()
 
     def stop(self):
         print("stopping command - {0}".format(self.command))

@@ -30,7 +30,12 @@ An example to restart celery when python source code changes in the main directo
         patterns: ["*.py"]
         touchfile: /app/manage.py
         source_directory: /var/libraries
-
+    - snap_watchdog_tricks.checkbeforeautorestart.CheckBeforeAutoRestartTrick:
+        patterns: ["./requirements/base.txt", "./requirements/text.txt", "./requirements/local.txt"]
+        command: ["/var/scripts_docker/django-refresh-requirements.sh"]
+        touchfile: /app/manage.py
+        check_command: ["echo", "'requirements changed'"]
+        autostart: False
 
 Installation
 ------------
