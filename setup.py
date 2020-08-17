@@ -2,7 +2,7 @@ import setuptools
 
 setuptools.setup(
     name="snap-watchdog-tricks",
-    version='0.0.1',
+    version='1.0.2',
     license="MIT",
 
     author="Martin Moss",
