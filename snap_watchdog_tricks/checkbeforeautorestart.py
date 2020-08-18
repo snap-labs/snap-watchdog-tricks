@@ -53,9 +53,12 @@ class CheckBeforeAutoRestartTrick(BatchTrick):
 
     def start(self):
         print("starting command - {0}".format(self.command))
-        self.process = subprocess.Popen(self.command, preexec_fn=os.setsid)
         if self.touchfile:
+            check = subprocess.run(self.command, stdout=subprocess.PIPE)
+            print(check.stdout.decode("utf-8") )
             self.touch_file()
+        else:
+            self.process = subprocess.Popen(self.command, preexec_fn=os.setsid)
 
     def stop(self):
         print("stopping command - {0}".format(self.command))
