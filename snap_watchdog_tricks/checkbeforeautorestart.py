@@ -39,28 +39,27 @@ class CheckBeforeAutoRestartTrick(BatchTrick, StreamCaptureCommandOutput):
             self.start()
 
     def check(self, events):
-
-        print("[{1}] Calling check command - {0}".format(self.check_command, self.command))
+        # print("[{1}] Calling check command - {0}".format(self.check_command, self.command))
         return self.streamcapture(self.check_command)
 
     def touch_file(self):
-        print("[{1}] Touching - {0}".format(self.touchfile, self.command))
+        # print("[{1}] Touching - {0}".format(self.touchfile, self.command))
         Path(self.touchfile).touch(exist_ok=True)
 
     def start(self):
-        print("[{0}] starting command - {0}".format(self.command))
         if self.touchfile:
-            print("[{1}] with touchfile - {0}".format(self.touchfile, self.command))
-            if self.streamcapture(self.check_command):
+            print("[WATCHMEDO] starting command - {0} with touchfile {1}".format(self.command, self.touchfile))
+            if self.streamcapture(self.command):
                 self.touch_file()
         else:
+            print("[WATCHMEDO] starting command - {0}".format(self.command))
             self.process = subprocess.Popen(self.command, preexec_fn=os.setsid)
 
     def stop(self):
-        print("[{0}] stopping command - {0}".format(self.command))
         if self.process is None:
             # print("[{0}] Process is None returning instantly".format(self.command))
             return
+        print("[WATCHMEDO] stopping command - {0}".format(self.command))
         try:
             os.killpg(os.getpgid(self.process.pid), self.stop_signal)
         except OSError:
