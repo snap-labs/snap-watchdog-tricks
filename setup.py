@@ -2,7 +2,7 @@ import setuptools
 
 setuptools.setup(
     name="snap-watchdog-tricks",
-    version='1.2.2',
+    version='1.2.3',
     license="MIT",
 
     author="Martin Moss",
@@ -27,7 +27,7 @@ setuptools.setup(
             "Topic :: System :: Filesystems",
     ],
     install_requires=[
-        'watchdog[watchmedo]==0.10.3',
+        'watchdog[watchmedo]==1.0.2',
         # 'watchdog_tricks@git+https://github.com/snap-labs/watchdog-tricks.git'
         'watchdog_tricks@https://github.com/snap-labs/watchdog-tricks/archive/v0.1.3.zip'
     ],
